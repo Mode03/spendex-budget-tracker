@@ -3,6 +3,7 @@ package com.budgettracker.spendex.models;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -11,14 +12,16 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    @Column(unique = true)
     private String email;
     private String password;
     //private Role role; // Enum: guest, user, admin
+    @Column(updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
-    private LocalDateTime lastLogin;
 
     // rysiai budgets
 }

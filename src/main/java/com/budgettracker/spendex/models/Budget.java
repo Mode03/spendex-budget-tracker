@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
 public class Budget {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -19,4 +20,11 @@ public class Budget {
     private LocalDate endDate;
 
     // rysiai user, categories
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
+    private List<Category> categories;
+
 }

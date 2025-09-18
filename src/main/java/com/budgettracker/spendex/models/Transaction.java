@@ -1,5 +1,6 @@
 package com.budgettracker.spendex.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String description;
@@ -22,4 +23,9 @@ public class Transaction {
     private String type; //income/expense
 
     // rysiai category
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    @JsonBackReference
+    private Category category;
+
 }
