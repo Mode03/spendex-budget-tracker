@@ -3,6 +3,8 @@ package com.budgettracker.spendex.controllers;
 import com.budgettracker.spendex.models.*;
 import com.budgettracker.spendex.repos.CategoryRepo;
 import com.budgettracker.spendex.repos.TransactionRepo;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +22,14 @@ public class TransactionController {
         this.categoryRepo = categoryRepo;
     }
 
-    // CREATE
+    // CREATE (201 created)
     @PostMapping
-    public Transaction addTransaction(@RequestBody Transaction transaction) {
-        return transactionRepo.save(transaction);
+    public ResponseEntity<Transaction> addTransaction(@RequestBody @Valid Transaction transaction) {
+        Transaction saved = transactionRepo.save(transaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    // READ (by id)
+    // READ (200 ok / 404 not found)
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable long id) {
         return transactionRepo.findById(id)
@@ -34,9 +37,9 @@ public class TransactionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // UPDATE
+    // UPDATE (200 ok / 404 not found)
     @PutMapping("/{id}")
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable long id, @RequestBody Transaction transactionDetails) {
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable long id, @RequestBody @Valid Transaction transactionDetails) {
         return transactionRepo.findById(id).map(transaction -> {
             transaction.setAmount(transactionDetails.getAmount());
             transaction.setType(transactionDetails.getType());
@@ -46,12 +49,12 @@ public class TransactionController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // DELETE
+    // DELETE (204 no content / 404 not found)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@PathVariable long id) {
         return transactionRepo.findById(id).map(transaction -> {
             transactionRepo.delete(transaction);
-            return ResponseEntity.ok().<Void>build();
+            return ResponseEntity.noContent().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }
 

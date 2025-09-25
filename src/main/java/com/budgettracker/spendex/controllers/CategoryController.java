@@ -3,6 +3,8 @@ package com.budgettracker.spendex.controllers;
 import com.budgettracker.spendex.models.Category;
 import com.budgettracker.spendex.repos.BudgetRepo;
 import com.budgettracker.spendex.repos.CategoryRepo;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +22,14 @@ public class CategoryController {
         this.budgetRepo = budgetRepo;
     }
 
-    // CREATE
+    // CREATE (201 created)
     @PostMapping
-    public Category addCategory(@RequestBody Category category) {
-        return categoryRepo.save(category);
+    public ResponseEntity<Category> addCategory(@RequestBody @Valid Category category) {
+        Category saved = categoryRepo.save(category);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    // READ (by id)
+    // READ (200 ok / 404 not found)
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategory(@PathVariable Long id) {
         return categoryRepo.findById(id)
@@ -34,9 +37,9 @@ public class CategoryController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // UPDATE
+    // UPDATE (200 ok / 404 not found)
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody @Valid Category categoryDetails) {
         return categoryRepo.findById(id).map(category -> {
             category.setName(categoryDetails.getName());
             category.setType(categoryDetails.getType());
@@ -44,12 +47,12 @@ public class CategoryController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // DELETE
+    // DELETE (204 no content / 404 not found)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         return categoryRepo.findById(id).map( category -> {
             categoryRepo.delete(category);
-            return ResponseEntity.ok().<Void>build();
+            return ResponseEntity.noContent().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }
 
