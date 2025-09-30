@@ -1,5 +1,6 @@
 package com.budgettracker.spendex.controllers;
 
+import com.budgettracker.spendex.exceptions.ResourceNotFoundException;
 import com.budgettracker.spendex.models.Category;
 import com.budgettracker.spendex.repos.BudgetRepo;
 import com.budgettracker.spendex.repos.CategoryRepo;
@@ -32,42 +33,46 @@ public class CategoryController {
     // READ (200 ok / 404 not found)
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategory(@PathVariable Long id) {
-        return categoryRepo.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Category category = categoryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+        return ResponseEntity.ok(category);
     }
 
     // UPDATE (200 ok / 404 not found)
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody @Valid Category categoryDetails) {
-        return categoryRepo.findById(id).map(category -> {
-            category.setName(categoryDetails.getName());
-            category.setType(categoryDetails.getType());
-            return ResponseEntity.ok(categoryRepo.save(category));
-        }).orElse(ResponseEntity.notFound().build());
+        Category category = categoryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+
+        category.setName(categoryDetails.getName());
+        category.setType(categoryDetails.getType());
+
+        return ResponseEntity.ok(categoryRepo.save(category));
     }
 
     // DELETE (204 no content / 404 not found)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        return categoryRepo.findById(id).map( category -> {
-            categoryRepo.delete(category);
-            return ResponseEntity.noContent().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
+        Category category = categoryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
+
+        categoryRepo.delete(category);
+        return ResponseEntity.noContent().build();
     }
 
     // LIST (all categories)
     @GetMapping
-    public List<Category> getCategories() {
-        return categoryRepo.findAll();
+    public ResponseEntity<List<Category>> getCategories() {
+        return ResponseEntity.ok(categoryRepo.findAll());
     }
 
     // HIERARCHINIS (all categories by budget id)
     @GetMapping("/by-budget/{budgetId}")
     public ResponseEntity<List<Category>> getCategoriesByBudgetId(@PathVariable Long budgetId) {
-        return budgetRepo.findById(budgetId).map(budget ->
-                ResponseEntity.ok(categoryRepo.findByBudget(budget))
-        ).orElse(ResponseEntity.notFound().build());
+        var budget = budgetRepo.findById(budgetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Budget", budgetId));
+
+        return ResponseEntity.ok(categoryRepo.findByBudget(budget));
     }
 
 }
