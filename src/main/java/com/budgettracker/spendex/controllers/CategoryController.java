@@ -46,6 +46,7 @@ public class CategoryController {
 
         category.setName(categoryDetails.getName());
         category.setType(categoryDetails.getType());
+        category.setIconUrl(categoryDetails.getIconUrl());
 
         return ResponseEntity.ok(categoryRepo.save(category));
     }
