@@ -26,6 +26,9 @@ public class TransactionController {
     // CREATE (201 created)
     @PostMapping
     public ResponseEntity<Transaction> addTransaction(@RequestBody @Valid Transaction transaction) {
+        var category = categoryRepo.findById(transaction.getCategory().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category", transaction.getCategory().getId()));
+
         Transaction saved = transactionRepo.save(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }

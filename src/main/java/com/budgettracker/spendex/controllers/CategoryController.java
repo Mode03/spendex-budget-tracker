@@ -26,6 +26,8 @@ public class CategoryController {
     // CREATE (201 created)
     @PostMapping
     public ResponseEntity<Category> addCategory(@RequestBody @Valid Category category) {
+        var budget = budgetRepo.findById(category.getBudget().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Budget", category.getBudget().getId()));
         Category saved = categoryRepo.save(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
