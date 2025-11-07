@@ -29,6 +29,7 @@ public class AuthenticationService {
         this.jwtService = jwtService;
     }
 
+    // register
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         User user = User.builder()
                 .firstName(registerRequest.getFirstName())
@@ -46,6 +47,7 @@ public class AuthenticationService {
                 .build();
     }
 
+    // login
     public AuthenticationResponse  authenticate(AuthenticationRequest authenticationRequest) {
         User user = userRepository.findByEmail(authenticationRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -62,6 +64,7 @@ public class AuthenticationService {
     public AuthenticationResponse refreshToken(String refreshToken) {
         User user = userRepository.findByEmail(jwtService.getEmailFromToken(refreshToken))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+
         var jwtToken = jwtService.generateToken(user);
         var newRefreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
         return AuthenticationResponse.builder()
