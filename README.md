@@ -1,11 +1,42 @@
-# spendex-budget-tracker
+# Spendex - personal budget tracker
 
-Sistemos paskirtis
-Projekto tikslas – palengvinti naudotojų asmeninių finansų planavimą bei suteikti galimybę efektyviau analizuoti biudžetą.
-Veikimo principas - sistema sudaryta iš dviejų pagrindinių dalių: internetinės aplikacijos, kuria naudosis sistemos naudotojai bei administratorius, ir aplikacijų programavimo sąsajos (API), atsakingos už duomenų mainus su duomenų baze.
-Naudotojas, prisijungęs prie sistemos, galės susikurti asmeninį biudžetą tam tikram laikotarpiui, apibrėžti išlaidų ir pajamų kategorijas bei registruoti operacijas. Kiekvienai kategorijai priskirtos operacijos leis analizuoti pinigų srautus. Administratorius prižiūrės sistemos veiklą ir tvarkys kategorijų šablonus.
+**Spendex** is a RESTful application built with **Spring Boot**, designed to help users manage personal finances efficiently.
+It provides secure **JWT authentication**, **role-based authorization**, and CRUD APIs for **budgets**, **categories**, and **transactions**.
 
-Funkciniai reikalavimai
-Neregistruotas sistemos naudotojas galės: • Peržiūrėti platformos reprezentacinį puslapį. • Užsiregistruoti prie sistemos. • Prisijungti prie sistemos.
-Registruotas naudotojas galės: • Atsijungti nuo sistemos. • Valdyti asmeninį biudžetą: o Sukurti, gauti, redaguoti, ištrinti. • Valdyti kategorijas: o Sukurti, gauti, redaguoti, ištrinti. • Valdyti operacijas: o Sukurti, gauti, redaguoti, ištrinti. • Peržiūrėti bendrą finansų balansą bei grafines ataskaitas (pagal biudžetą ir kategorijas).
-Administratorius galės: • Šalinti naudotojus • Šalinti netinkamus biudžetus/tvarkyti sistemos kategorijų šablonus (bendrinės kategorijos, kurias gali naudoti visi).
+## 🚀 Features
+
+### Authentication & Security
+- Secure login and registration with JWT-based authentication
+- Supports access and refresh tokens
+- Stateless session management for scalability
+- Role-based authorization (USER, ADMIN)
+- Custom JWT filter and validation on every request
+
+### User Management
+- Register and authenticate users with encrypted passwords (BCrypt)
+- Validate credentials and refresh tokens
+
+### Budget Management
+- Create, update, and delete budgets linked to users
+- Each budget can have multiple categories and transactions
+- Automatically stores creation and update timestamps
+
+### Category Management
+- Add, edit, or remove categories for budgets
+- Supports both income and expense types
+- Categorize transactions for better financial tracking
+
+### Transaction Tracking
+- Add new income or expense transactions
+- Validate transaction amounts and dates
+- Retrieve transactions by category or across all budgets
+
+### Additional Features
+- Global exception handling for consistent API responses
+- Input validation using Jakarta Validation annotations
+- Easily extendable for new modules like investments or goals
+
+## ⚙️ Tech Stack
+- Java 21
+- Spring Boot
+- PostgreSQL
