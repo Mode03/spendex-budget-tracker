@@ -27,11 +27,11 @@ public class User implements UserDetails {
     private Long id;
 
     @NotBlank
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String firstName;
 
     @NotBlank
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String lastName;
 
     @NotBlank
