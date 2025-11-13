@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,4 +63,22 @@ public class GlobalExceptionHandler {
         body.put("details", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
+
+    // User cant access other users stuff
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Map<String, String>> handleForbiddenException(ForbiddenException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "Forbidden");
+        body.put("details", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "Forbidden");
+        body.put("details", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
 }
