@@ -51,6 +51,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean enabled = true;
+
     @PrePersist
     public void onCreate() {
         createdAt = LocalDateTime.now();
@@ -86,7 +90,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     @Override
