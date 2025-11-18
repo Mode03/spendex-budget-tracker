@@ -3,10 +3,11 @@ package com.budgettracker.spendex.services;
 import com.budgettracker.spendex.dto.AuthenticationRequest;
 import com.budgettracker.spendex.dto.AuthenticationResponse;
 import com.budgettracker.spendex.dto.RegisterRequest;
+import com.budgettracker.spendex.exceptions.EmailAlreadyUsedException;
 import com.budgettracker.spendex.repos.UserRepo;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.budgettracker.spendex.models.User;
@@ -31,6 +32,12 @@ public class AuthenticationService {
 
     // register
     public AuthenticationResponse register(RegisterRequest registerRequest) {
+        // 409 CONFLICT
+        userRepository.findByEmail(registerRequest.getEmail())
+                .ifPresent(u -> {
+                    throw new EmailAlreadyUsedException("Email already registered");
+                });
+
         User user = User.builder()
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
@@ -39,6 +46,7 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
+
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
         return AuthenticationResponse.builder()
@@ -50,9 +58,14 @@ public class AuthenticationService {
     // login
     public AuthenticationResponse  authenticate(AuthenticationRequest authenticationRequest) {
         User user = userRepository.findByEmail(authenticationRequest.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
+        } catch (Exception e) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
+
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
         return AuthenticationResponse.builder()
