@@ -33,15 +33,31 @@ public class UserService {
     }
 
     public User updateProfile(UserProfileUpdateDTO dto) {
+
+        if ((dto.getFirstName() == null || dto.getFirstName().isBlank()) &&
+                (dto.getLastName() == null || dto.getLastName().isBlank()) &&
+                (dto.getPassword() == null || dto.getPassword().isBlank())) {
+            throw new IllegalArgumentException("At least one field must be provided");
+        }
+
         User currentUser = getCurrentUser();
 
-        currentUser.setFirstName(dto.getFirstName());
-        currentUser.setLastName(dto.getLastName());
+        if (dto.getFirstName() != null && !dto.getFirstName().isBlank()) {
+            currentUser.setFirstName(dto.getFirstName());
+        }
+
+        if (dto.getLastName() != null && !dto.getLastName().isBlank()) {
+            currentUser.setLastName(dto.getLastName());
+        }
+
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             currentUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
+
         return userRepo.save(currentUser);
     }
+
+
 
     public User toggleUser(Long userId, boolean enabled) {
         User user = userRepo.findById(userId)

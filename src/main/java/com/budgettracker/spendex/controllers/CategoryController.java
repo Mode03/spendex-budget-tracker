@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -40,9 +41,13 @@ public class CategoryController {
 
     // DELETE (204 no content / 404 not found)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+
+        Category category = categoryService.getCategory(id);
+        Long budgetId = category.getBudget().getId();
+
         categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("budgetId", budgetId));
     }
 
     // LIST (all categories)
